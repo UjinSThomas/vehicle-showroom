@@ -627,23 +627,45 @@
     </div>
 
     <script>
-      // Frontend can optionally talk to a backend API.
-      // For pure GitHub Pages (static), leave ENABLE_LIVE = false and
-      // the page will not call any backend, so there are no "Live (error)" states.
-      // If you add a backend later (Flask, Apps Script, etc.), set ENABLE_LIVE = true
-      // and set API_BASE to your backend URL.
-      const ENABLE_LIVE = false;
-      const API_BASE = ""; // backend base URL (unused when ENABLE_LIVE = false)
+      // Detect environment: local (Flask), Render backend, or GitHub Pages (static)
+      const IS_LOCAL_HOST =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "";
+      
+      const IS_RENDER = window.location.hostname.includes("onrender.com");
+      
+      // For Render: Get backend URL from environment or use a known Render URL
+      // For local: Use same origin
+      // For GitHub Pages: Disable live mode (static page)
+      let API_BASE = "";
+      let ENABLE_LIVE = false;
+      
+      if (IS_LOCAL_HOST) {
+        // Local development - Flask running on same origin
+        ENABLE_LIVE = true;
+        API_BASE = ""; // Same origin
+      } else if (IS_RENDER) {
+        // Render deployment - frontend should connect to Render backend
+        // Update this to your actual Render backend URL
+        ENABLE_LIVE = true;
+        API_BASE = window.location.origin; // Same origin if backend serves frontend, or set to your backend URL
+        // If backend is on separate Render service, set:
+        // API_BASE = "https://your-backend-name.onrender.com";
+      } else {
+        // GitHub Pages or other static hosting - disable backend calls
+        ENABLE_LIVE = false;
+        API_BASE = "";
+      }
       let autoRefresh = true;
       let intervalId = null;
       let isUpdating = false;
 
       const EDITABLE_COLUMNS = new Set([
-        "Current Status",
-        "Current Service",
+        "CURRENT STATUS",
+        "SERVICE",
         "Registration Number",
         "Name of Service Advisor",
-        "Remarks",
       ]);
 
       const statusBar = document.getElementById("live-status");
