@@ -129,17 +129,18 @@ GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"...",...}
 
 ```
 popular/
-├── index.html              # Frontend for GitHub Pages (static)
 ├── backend/
 │   ├── app.py             # Flask backend
 │   ├── requirements.txt   # Python dependencies
-│   ├── Procfile          # Render deployment config
-│   ├── service-account.json  # Google service account (NOT in git)
+│   ├── Procfile          # Heroku deployment config (optional)
+│   ├── service-account.json  # Google service account (NOT in git, local only)
 │   └── templates/
-│       └── index.html     # Frontend served by Flask
+│       └── index.html     # Frontend served by Flask (displays all form data)
 ├── render.yaml           # Render deployment configuration
 ├── .gitignore           # Git ignore file
-└── README.md            # This file
+├── README.md            # This file
+├── QUICK_START.md       # Quick deployment guide
+└── GITHUB_PUSH_STEPS.md # GitHub push instructions
 ```
 
 ## Google Sheets Integration
