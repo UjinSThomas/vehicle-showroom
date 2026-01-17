@@ -55,12 +55,14 @@ A real-time dashboard for displaying and managing vehicle service updates from G
    - Go to [Render Dashboard](https://dashboard.render.com)
    - Click **New +** → **Web Service**
    - Connect your GitHub repository
-   - Configure:
+   - Configure with these **EXACT** settings:
      - **Name**: `vehicle-dashboard-backend` (or your choice)
      - **Environment**: `Python 3`
-     - **Build Command**: `cd backend && pip install -r requirements.txt`
-     - **Start Command**: `cd backend && gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120`
-     - **Root Directory**: Leave empty (or set to `backend` if your repo structure differs)
+     - **Root Directory**: `backend` ⚠️ **IMPORTANT: Set this to "backend"**
+     - **Build Command**: `pip install -r requirements.txt`
+     - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120`
+   
+   **Note**: By setting Root Directory to `backend`, all commands run from the backend folder, so you don't need `cd backend &&` in the commands.
 
 3. **Set Environment Variables on Render**:
    - Go to your Render service → **Environment**
@@ -136,7 +138,6 @@ popular/
 │   ├── service-account.json  # Google service account (NOT in git, local only)
 │   └── templates/
 │       └── index.html     # Frontend served by Flask (displays all form data)
-├── render.yaml           # Render deployment configuration
 ├── .gitignore           # Git ignore file
 ├── README.md            # This file
 ├── QUICK_START.md       # Quick deployment guide

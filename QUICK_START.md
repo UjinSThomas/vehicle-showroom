@@ -35,17 +35,21 @@ See `DEPLOYMENT_GUIDE.md` Step 1 for details.
 - [ ] Share Google Sheet with service account email (Editor permission)
 
 ### 3️⃣ Deploy to Render (15 minutes)
-See `DEPLOYMENT_GUIDE.md` Step 3 for details.
+
+**IMPORTANT:** Configure Render manually through the dashboard (render.yaml is not used).
 
 **Quick checklist:**
 - [ ] Create Render account
 - [ ] Connect GitHub repository
-- [ ] Create Web Service with these settings:
-  - **Build Command**: `cd backend && pip install -r requirements.txt`
-  - **Start Command**: `cd backend && gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120`
-- [ ] Set Environment Variables:
+- [ ] Create Web Service with these **EXACT** settings:
+  - **Name**: `vehicle-dashboard-backend`
+  - **Environment**: `Python 3`
+  - **Root Directory**: `backend` ⚠️ **Set this to "backend"**
+  - **Build Command**: `pip install -r requirements.txt`
+  - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120`
+- [ ] Set Environment Variables (in Render dashboard → Environment):
   - `SPREADSHEET_ID` = `1BwVVuz6g3YQFX1WZcY_OPbfs6vKaUH1CaEu5bjB1sYM`
-  - `GOOGLE_SERVICE_ACCOUNT_JSON` = (entire JSON file as one line)
+  - `GOOGLE_SERVICE_ACCOUNT_JSON` = (entire JSON file as one line, remove all line breaks)
 - [ ] Deploy and wait
 
 ## 📋 Your Links
