@@ -1,7 +1,630 @@
-git : fatal: path 'index.html' does not exist in '5e651e2'
-At C:\Users\ujins\AppData\Local\Temp\ps-script-a6ae7411-332d-4b67-ac07-598c5781aeb1.ps1:81 char:45
-+ ... op\popular; git show 5e651e2:index.html > backend\templates\index.htm ...
-+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (fatal: path 'in...st in '5e651e2':String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vehicle Updates</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --primary: #4caf50;
+        --primary-dark: #388e3c;
+        --accent: #ff9800;
+        --bg: #f5f5f5;
+        --text-main: #333;
+        --text-muted: #777;
+        --card-bg: #ffffff;
+        --border: #e0e0e0;
+        --row-alt: #f9f9f9;
+        --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: #f3f4f6;
+        color: var(--text-main);
+        -webkit-font-smoothing: antialiased;
+        font-size: clamp(13px, 1.4vw, 16px);
+      }
+
+      .status-bar {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        background: var(--primary);
+        color: #ffffff;
+        padding: 8px 16px;
+        border-radius: 999px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-size: clamp(11px, 1.2vw, 12px);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1000;
+      }
+
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ffffff;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .status-bar.error .status-indicator {
+        background: #f44336;
+      }
+
+      .status-bar.updating .status-indicator {
+        background: #ff9800;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 80px 20px 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        font-size: clamp(24px, 4vw, 36px);
+        color: var(--text-main);
+        margin: 0 0 8px 0;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background: #e0e0e0;
+        color: var(--text-main);
+      }
+
+      .btn-secondary:hover {
+        background: #d0d0d0;
+      }
+
+      .table-wrapper {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: var(--primary);
+        color: white;
+        padding: 16px 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: clamp(12px, 1.2vw, 14px);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      td {
+        padding: 14px 12px;
+        border-bottom: 1px solid var(--border);
+        font-size: clamp(12px, 1.2vw, 14px);
+      }
+
+      tr:nth-child(even) {
+        background: var(--row-alt);
+      }
+
+      tr:hover {
+        background: #f0f0f0;
+      }
+
+      .editable {
+        cursor: pointer;
+        position: relative;
+      }
+
+      .editable:hover {
+        background: #e8f5e9;
+      }
+
+      .edit-input-wrapper {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .edit-input {
+        flex: 1;
+        padding: 6px 10px;
+        border: 2px solid var(--primary);
+        border-radius: 4px;
+        font-size: inherit;
+      }
+
+      .edit-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .edit-btn-save {
+        background: var(--primary);
+        color: white;
+      }
+
+      .edit-btn-cancel {
+        background: #e0e0e0;
+        color: var(--text-main);
+      }
+
+      .thumb-img {
+        max-width: 150px;
+        max-height: 100px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .service-list {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-muted);
+      }
+
+      .cell-muted {
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 70px 10px 20px;
+        }
+
+        .status-bar {
+          top: 10px;
+          right: 10px;
+          font-size: 11px;
+          padding: 6px 12px;
+        }
+
+        table {
+          font-size: 12px;
+        }
+
+        th, td {
+          padding: 10px 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="status-bar" id="live-status">
+      <div class="status-indicator"></div>
+      <span id="live-status-text">Live</span>
+      <span id="last-refresh-pill" style="font-size: 10px; opacity: 0.9;"></span>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" id="refresh-btn">Refresh</button>
+      <button class="btn btn-secondary" id="pause-btn">Pause</button>
+    </div>
+
+    <div class="container">
+      <div class="header">
+        <h1>Vehicle Updates Dashboard</h1>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="data-table">
+          <thead id="header-row"></thead>
+          <tbody id="body-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const IS_LOCAL_HOST =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "";
+
+      const IS_RENDER = window.location.hostname.includes("onrender.com");
+
+      let API_BASE = "";
+      let ENABLE_LIVE = false;
+
+      if (IS_LOCAL_HOST || IS_RENDER) {
+        ENABLE_LIVE = true;
+        API_BASE = "";
+      } else {
+        ENABLE_LIVE = false;
+        API_BASE = "";
+      }
+
+      let autoRefresh = true;
+      let intervalId = null;
+      let isUpdating = false;
+
+      const EDITABLE_COLUMNS = new Set([
+        "CURRENT STATUS",
+        "SERVICE",
+        "Registration Number",
+        "Name of Service Advisor",
+      ]);
+
+      const statusBar = document.getElementById("live-status");
+      const statusText = document.getElementById("live-status-text");
+      const lastRefreshPill = document.getElementById("last-refresh-pill");
+      const refreshBtn = document.getElementById("refresh-btn");
+      const pauseBtn = document.getElementById("pause-btn");
+      const headerRow = document.getElementById("header-row");
+      const bodyRows = document.getElementById("body-rows");
+      const table = document.getElementById("data-table");
+
+      function setStatus(status) {
+        statusBar.className = `status-bar ${status}`;
+        if (status === "live") {
+          statusText.textContent = "Live";
+        } else if (status === "updating") {
+          statusText.textContent = "Updating...";
+        } else if (status === "error") {
+          statusText.textContent = "Error";
+        }
+      }
+
+      function formatTime(date) {
+        const h12 = date.getHours() % 12 || 12;
+        const m = String(date.getMinutes()).padStart(2, "0");
+        const s = String(date.getSeconds()).padStart(2, "0");
+        const ampm = date.getHours() >= 12 ? "PM" : "AM";
+        return `${h12}:${m}:${s} ${ampm}`;
+      }
+
+      async function fetchData() {
+        if (!ENABLE_LIVE) return;
+        if (isUpdating) return;
+        isUpdating = true;
+        setStatus("updating");
+
+        table.classList.add("updating");
+
+        try {
+          const res = await fetch(`${API_BASE}/api/responses`, {
+            cache: "no-cache",
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          renderTable(data.headers || [], data.rows || [], data.rowIndices || []);
+          const now = new Date();
+          lastRefreshPill.textContent = `Last refresh: ${formatTime(now)}`;
+          setStatus("live");
+
+          setTimeout(() => {
+            table.classList.remove("updating");
+          }, 50);
+        } catch (err) {
+          console.error("Fetch error", err);
+          bodyRows.innerHTML = `
+            <tr>
+              <td class="empty-state cell-muted">Unable to load data. Please check the server.</td>
+            </tr>`;
+          setStatus("error");
+          table.classList.remove("updating");
+        } finally {
+          isUpdating = false;
+        }
+      }
+
+      function isDriveLink(value) {
+        if (!value) return false;
+        return (
+          value.includes("drive.google.com") || value.includes("docs.google.com")
+        );
+      }
+
+      function extractFileId(url) {
+        if (!url) return null;
+        let match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match) return match[1];
+        match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (match) return match[1];
+        match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (match) return match[1];
+        match = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
+        if (match) return match[1];
+        return null;
+      }
+
+      async function saveCell(rowIndex, colIndex, newValue, td, originalContent) {
+        try {
+          td.classList.add("cell-muted");
+          const res = await fetch(`${API_BASE}/api/update-cell`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              rowIndex,
+              colIndex,
+              value: newValue,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            throw new Error(data.error || "Update failed");
+          }
+          td.classList.remove("cell-muted");
+          td.textContent = newValue || "";
+          makeCellEditable(td, rowIndex, colIndex, newValue, td.dataset.header);
+        } catch (err) {
+          console.error("Update error", err);
+          td.classList.remove("cell-muted", "editing-cell");
+          td.innerHTML = originalContent;
+        }
+      }
+
+      function makeCellEditable(td, sheetRow, sheetCol, value, headerName) {
+        td.classList.add("editable");
+        td.onclick = () => {
+          const currentValue = value || "";
+          const previousInner = td.innerHTML;
+
+          const wrapper = document.createElement("div");
+          wrapper.className = "edit-input-wrapper";
+
+          const input = document.createElement("input");
+          input.type = "text";
+          input.className = "edit-input";
+          input.value = currentValue;
+          input.focus();
+          input.select();
+
+          const saveBtn = document.createElement("button");
+          saveBtn.className = "edit-btn edit-btn-save";
+          saveBtn.textContent = "Save";
+
+          const cancelBtn = document.createElement("button");
+          cancelBtn.className = "edit-btn edit-btn-cancel";
+          cancelBtn.textContent = "Cancel";
+
+          wrapper.appendChild(input);
+          wrapper.appendChild(saveBtn);
+          wrapper.appendChild(cancelBtn);
+
+          td.innerHTML = "";
+          td.appendChild(wrapper);
+          td.classList.add("editing-cell");
+
+          const commit = () => {
+            const newValue = input.value.trim();
+            saveCell(sheetRow, sheetCol, newValue, td, previousInner);
+          };
+
+          const cancel = () => {
+            td.classList.remove("editing-cell");
+            td.innerHTML = previousInner;
+            makeCellEditable(td, sheetRow, sheetCol, value, headerName);
+          };
+
+          saveBtn.onclick = (e) => {
+            e.stopPropagation();
+            commit();
+          };
+          cancelBtn.onclick = (e) => {
+            e.stopPropagation();
+            cancel();
+          };
+          input.onkeydown = (e) => {
+            if (e.key === "Enter") {
+              commit();
+            } else if (e.key === "Escape") {
+              cancel();
+            }
+          };
+        };
+      }
+
+      function renderTable(headers, rows, rowIndices) {
+        headerRow.innerHTML = "";
+        headers.forEach((h) => {
+          const th = document.createElement("th");
+          th.textContent = h || "";
+          headerRow.appendChild(th);
+        });
+
+        bodyRows.innerHTML = "";
+
+        if (!rows.length) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = headers.length || 1;
+          td.className = "empty-state cell-muted";
+          td.textContent = "No responses yet. Submit the form to see data here.";
+          tr.appendChild(td);
+          bodyRows.appendChild(tr);
+          return;
+        }
+
+        rows.forEach((row, rowIdx) => {
+          const tr = document.createElement("tr");
+          const sheetRow = rowIndices[rowIdx];
+
+          row.forEach((cell, colIdx) => {
+            const td = document.createElement("td");
+            const headerName = headers[colIdx] || "";
+            const sheetCol = colIdx + 3;
+            const value = cell == null ? "" : String(cell);
+            td.dataset.header = headerName;
+
+            if (isDriveLink(value)) {
+              const fileId = extractFileId(value);
+              if (fileId) {
+                const img = document.createElement("img");
+                img.src =
+                  "https://drive.google.com/thumbnail?id=" +
+                  fileId +
+                  "&sz=w400";
+                img.alt = "Vehicle image";
+                img.loading = "lazy";
+                img.className = "thumb-img";
+                img.onerror = () => {
+                  img.style.display = "none";
+                  td.innerHTML =
+                    "<span class='thumb-fallback'>Image not accessible</span>";
+                };
+                td.appendChild(img);
+              } else {
+                const a = document.createElement("a");
+                a.href = value;
+                a.target = "_blank";
+                a.textContent = "View file";
+                td.appendChild(a);
+              }
+            } else {
+              const isServiceColumn = (headerName || "")
+                .toLowerCase()
+                .includes("service");
+
+              if (isServiceColumn && value) {
+                const parts = value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+                if (parts.length > 0) {
+                  td.className = "service-list";
+                  td.innerHTML = `<ul class="service-list">${parts
+                    .map((p) => `<li>${p}</li>`)
+                    .join("")}</ul>`;
+                } else {
+                  td.textContent = value;
+                }
+              } else {
+                const isTimeColumn = (headerName || "")
+                  .toLowerCase()
+                  .includes("time");
+
+                if (isTimeColumn && value) {
+                  let formattedValue = String(value);
+                  formattedValue = formattedValue.replace(/(\d{1,2}:\d{2}):00(\s*(AM|PM))?/gi, "$1$2");
+                  td.textContent = formattedValue;
+                } else {
+                  td.textContent = value;
+                }
+              }
+            }
+
+            const normalizedHeader = (headerName || "").trim().toLowerCase();
+            const isEditable = Array.from(EDITABLE_COLUMNS).some(
+              (h) => h.toLowerCase() === normalizedHeader
+            );
+
+            if (isEditable && sheetRow && sheetCol) {
+              const span = document.createElement("span");
+              span.className = "editable";
+              span.textContent = value || "";
+              if (!value) {
+                span.classList.add("cell-muted");
+                span.textContent = "(click to edit)";
+              }
+              td.innerHTML = "";
+              td.appendChild(span);
+              makeCellEditable(td, sheetRow, sheetCol, value, headerName);
+            }
+
+            tr.appendChild(td);
+          });
+          bodyRows.appendChild(tr);
+        });
+      }
+
+      refreshBtn.onclick = () => {
+        fetchData();
+      };
+
+      pauseBtn.onclick = () => {
+        autoRefresh = !autoRefresh;
+        if (autoRefresh) {
+          pauseBtn.textContent = "Pause";
+          startAutoRefresh();
+        } else {
+          pauseBtn.textContent = "Resume";
+          if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+          }
+        }
+      };
+
+      function startAutoRefresh() {
+        if (intervalId) clearInterval(intervalId);
+        if (autoRefresh && ENABLE_LIVE) {
+          intervalId = setInterval(fetchData, 15000);
+        }
+      }
+
+      if (ENABLE_LIVE) {
+        fetchData();
+        startAutoRefresh();
+      } else {
+        bodyRows.innerHTML = `
+          <tr>
+            <td class="empty-state cell-muted">Static mode - No backend connection</td>
+          </tr>`;
+        setStatus("error");
+      }
+    </script>
+  </body>
+</html>
