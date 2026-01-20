@@ -48,261 +48,596 @@
         z-index: 1000;
       }
 
-      .status-indicator {
+      .status-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
         background: #ffffff;
-        animation: pulse 2s infinite;
+        border: 1.5px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+        animation: pulse 1.8s infinite;
+        flex-shrink: 0;
       }
 
-      @keyframes pulse {
-        0%, 100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.5;
-        }
+      .status-bar.updating {
+        background: var(--accent);
       }
 
-      .status-bar.error .status-indicator {
+      .status-bar.error {
         background: #f44336;
       }
 
-      .status-bar.updating .status-indicator {
-        background: #ff9800;
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+        }
+        70% {
+          transform: scale(1.1);
+          box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        }
       }
 
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 80px 20px 40px;
+      .page {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 24px 12px 32px;
       }
 
-      .header {
-        text-align: center;
-        margin-bottom: 40px;
+      .card {
+        width: 100%;
+        max-width: 1200px;
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 20px 20px 28px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        border: 1px solid #e5e7eb;
       }
 
-      .header h1 {
-        font-size: clamp(24px, 4vw, 36px);
-        color: var(--text-main);
-        margin: 0 0 8px 0;
+      @media (min-width: 1400px) {
+        .card {
+          max-width: 1400px;
+        }
+      }
+
+      @media (min-width: 1600px) {
+        .card {
+          max-width: 1600px;
+        }
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .title-block h1 {
+        margin: 0;
+        font-size: clamp(18px, 3.5vw, 28px);
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+      }
+
+      .title-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(76, 175, 80, 0.08);
+        color: #2e7d32;
+        font-size: clamp(10px, 1.1vw, 11px);
+        margin-top: 6px;
+      }
+
+      .meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        font-size: clamp(11px, 1.2vw, 12px);
+        color: var(--text-muted);
+        margin-top: 8px;
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #f1f8e9;
+        color: #558b2f;
+        font-size: clamp(10px, 1.1vw, 11px);
       }
 
       .controls {
         display: flex;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 30px;
+        align-items: center;
+        gap: 8px;
         flex-wrap: wrap;
+        margin-top: 4px;
       }
 
       .btn {
-        padding: 10px 20px;
         border: none;
-        border-radius: 8px;
-        font-size: 14px;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: clamp(11px, 1.2vw, 12px);
         cursor: pointer;
-        transition: all 0.2s;
-        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.15s ease, transform 0.1s ease,
+          box-shadow 0.15s ease;
       }
 
       .btn-primary {
         background: var(--primary);
-        color: white;
+        color: #ffffff;
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
       }
 
       .btn-primary:hover {
         background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(76, 175, 80, 0.4);
       }
 
-      .btn-secondary {
-        background: #e0e0e0;
+      .btn-ghost {
+        background: rgba(0, 0, 0, 0.02);
         color: var(--text-main);
       }
 
-      .btn-secondary:hover {
-        background: #d0d0d0;
+      .btn-ghost:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .btn-cancel {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .btn-cancel:hover {
+        background: #c8e6c9;
+        color: #1b5e20;
+      }
+
+      .btn-pause {
+        background: #f1f8e9;
+        color: #558b2f;
+      }
+
+      .btn-pause:hover {
+        background: #e8f5e9;
+        color: #2e7d32;
       }
 
       .table-wrapper {
-        background: var(--card-bg);
-        border-radius: 12px;
-        box-shadow: var(--shadow-soft);
-        overflow: hidden;
+        margin-top: 12px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: #ffffff;
+        overflow-x: auto; /* horizontal scroll if many columns */
+        overflow-y: visible; /* let the page scroll vertically */
       }
 
       table {
-        width: 100%;
         border-collapse: collapse;
+        width: 100%;
+        font-size: clamp(11px, 1.3vw, 13px);
+        table-layout: auto;
+        transition: opacity 0.1s ease;
+      }
+      
+      table.updating {
+        opacity: 0.95;
+      }
+
+      thead {
+        background: linear-gradient(90deg, #43a047, #66bb6a);
+        color: #ffffff;
+      }
+
+      th,
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
 
       th {
-        background: var(--primary);
-        color: white;
-        padding: 16px 12px;
-        text-align: left;
         font-weight: 600;
-        font-size: clamp(12px, 1.2vw, 14px);
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 1;
+        backdrop-filter: blur(6px);
       }
 
-      td {
-        padding: 14px 12px;
-        border-bottom: 1px solid var(--border);
-        font-size: clamp(12px, 1.2vw, 14px);
-      }
-
-      tr:nth-child(even) {
+      tbody tr:nth-child(even) {
         background: var(--row-alt);
       }
 
-      tr:hover {
-        background: #f0f0f0;
+      tbody tr:hover {
+        background: #e8f5e9;
+      }
+
+      .cell-muted {
+        color: var(--text-muted);
+      }
+
+      .service-list {
+        list-style: none;
+        margin: 0;
+        padding-left: 0;
+        line-height: 1.5;
+      }
+
+      .service-list li {
+        margin: 2px 0;
+      }
+
+      .service-list li::before {
+        content: "• ";
       }
 
       .editable {
         cursor: pointer;
         position: relative;
+        padding: 2px 4px;
+        border-radius: 6px;
+        transition: background 0.12s ease, color 0.12s ease;
       }
 
       .editable:hover {
-        background: #e8f5e9;
+        background: #e3f2fd;
+        color: #1e88e5;
       }
 
       .edit-input-wrapper {
         display: flex;
-        gap: 8px;
         align-items: center;
+        gap: 6px;
+        min-width: 0;
       }
 
       .edit-input {
         flex: 1;
-        padding: 6px 10px;
-        border: 2px solid var(--primary);
-        border-radius: 4px;
-        font-size: inherit;
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 2px solid #1e88e5;
+        font-size: clamp(11px, 1.2vw, 12px);
+        min-width: 0;
+        box-sizing: border-box;
       }
 
-      .edit-btn {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 12px;
+      .edit-actions {
+        display: inline-flex;
+        gap: 4px;
+        flex-shrink: 0;
       }
 
-      .edit-btn-save {
-        background: var(--primary);
-        color: white;
+      td.editing-cell {
+        max-width: none !important;
+        min-width: 200px;
       }
 
-      .edit-btn-cancel {
-        background: #e0e0e0;
-        color: var(--text-main);
+      @media (max-width: 768px) {
+        td.editing-cell {
+          min-width: 150px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        td.editing-cell {
+          min-width: 120px;
+        }
+      }
+
+      .edit-icon {
+        font-size: 11px;
+        opacity: 0.7;
+        margin-left: 4px;
+      }
+
+      .btn-compact {
+        padding: 4px 8px;
+        font-size: clamp(10px, 1.1vw, 11px);
+        border-radius: 6px;
       }
 
       .thumb-img {
-        max-width: 150px;
-        max-height: 100px;
+        max-width: 100%;
+        max-height: 140px;
         border-radius: 8px;
         object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
       }
 
-      .service-list {
-        margin: 0;
-        padding-left: 20px;
+      .thumb-fallback {
+        font-size: clamp(10px, 1.1vw, 11px);
+        color: var(--text-muted);
       }
 
       .empty-state {
         text-align: center;
-        padding: 40px;
+        padding: 32px 16px;
         color: var(--text-muted);
+        font-size: clamp(12px, 1.4vw, 14px);
       }
 
-      .cell-muted {
-        color: var(--text-muted);
-        font-style: italic;
+      /* Removed fade-in animation to prevent blinking on updates */
+
+      @media (max-width: 1024px) {
+        th,
+        td {
+          padding: 8px 10px;
+          font-size: clamp(11px, 1.2vw, 12px);
+        }
+        .thumb-img {
+          max-width: 150px;
+          max-height: 110px;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .status-bar {
+          left: auto;
+          right: 16px;
+          justify-content: flex-start;
+          width: auto;
+          padding: 8px 16px;
+          font-size: clamp(11px, 1.1vw, 12px);
+        }
+        table {
+          font-size: clamp(11px, 1.2vw, 12px);
+        }
+        .title-block h1 {
+          font-size: clamp(20px, 3vw, 24px);
+        }
+        .meta {
+          font-size: clamp(11px, 1.1vw, 12px);
+        }
+        .btn {
+          font-size: clamp(11px, 1.1vw, 12px);
+        }
       }
 
       @media (max-width: 768px) {
-        .container {
-          padding: 70px 10px 20px;
+        .card {
+          border-radius: 14px;
+          padding: 12px 8px 16px;
         }
-
-        .status-bar {
-          top: 10px;
-          right: 10px;
-          font-size: 11px;
-          padding: 6px 12px;
+        .card-header {
+          flex-direction: column;
+          align-items: flex-start;
         }
-
+        .meta {
+          align-items: flex-start;
+        }
+        .table-wrapper {
+          border-radius: 14px;
+          margin-left: -8px;
+          margin-right: -8px;
+          width: calc(100% + 16px);
+        }
+        .table-wrapper table {
+          width: 100%;
+          display: table;
+        }
+        th,
+        td {
+          padding: 6px 4px;
+          font-size: clamp(9px, 2.2vw, 10px);
+          white-space: normal;
+          word-wrap: break-word;
+          word-break: break-word;
+          max-width: 130px;
+        }
+        th {
+          font-size: clamp(8px, 2vw, 9px);
+          padding: 6px 4px;
+        }
         table {
-          font-size: 12px;
+          font-size: clamp(9px, 2.2vw, 10px);
         }
+        .thumb-img {
+          max-width: 80px;
+          max-height: 60px;
+        }
+        .status-bar {
+          left: auto;
+          right: 12px;
+          width: auto;
+          justify-content: flex-start;
+          border-radius: 999px;
+          font-size: clamp(10px, 2.3vw, 11px);
+          padding: 5px 10px;
+        }
+        .meta {
+          width: 100%;
+        }
+        .controls {
+          width: 100%;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+        }
+        .btn {
+          flex: 1 1 auto;
+          justify-content: center;
+          padding: 5px 10px;
+          font-size: clamp(10px, 2.3vw, 11px);
+        }
+        .title-block h1 {
+          font-size: clamp(18px, 4.5vw, 22px);
+        }
+        .pill {
+          font-size: clamp(9px, 2.2vw, 10px);
+          padding: 3px 8px;
+        }
+        .meta {
+          font-size: clamp(10px, 2.2vw, 11px);
+        }
+        .empty-state {
+          font-size: clamp(11px, 2.5vw, 13px);
+        }
+        .edit-input-wrapper {
+          flex-direction: column;
+          gap: 6px;
+          width: 100%;
+          min-width: 0;
+        }
+        .edit-input {
+          width: 100%;
+          min-width: 0;
+          font-size: clamp(10px, 2.3vw, 11px);
+          padding: 6px;
+        }
+        .edit-actions {
+          display: flex;
+          width: 100%;
+          gap: 6px;
+        }
+        .edit-actions .btn {
+          flex: 1;
+          padding: 6px 8px;
+          font-size: clamp(9px, 2.2vw, 10px);
+        }
+      }
 
-        th, td {
-          padding: 10px 8px;
+      @media (max-width: 480px) {
+        .page {
+          padding: 8px 4px;
+        }
+        .card {
+          padding: 10px 6px 14px;
+        }
+        .title-block h1 {
+          font-size: clamp(16px, 4vw, 20px);
+        }
+        .title-badge span {
+          font-size: clamp(8px, 2vw, 9px);
+        }
+        th,
+        td {
+          padding: 4px 2px;
+          font-size: clamp(8px, 2.2vw, 9px);
+          max-width: 110px;
+        }
+        th {
+          font-size: clamp(7px, 2vw, 8px);
+        }
+        table {
+          font-size: clamp(8px, 2.2vw, 9px);
+        }
+        .thumb-img {
+          max-width: 60px;
+          max-height: 45px;
+        }
+        .status-bar {
+          left: auto;
+          right: 8px;
+          width: auto;
+          justify-content: flex-start;
+          font-size: clamp(9px, 2.5vw, 10px);
+          padding: 4px 8px;
+        }
+        .btn {
+          padding: 4px 8px;
+          font-size: clamp(9px, 2.5vw, 10px);
+        }
+        .pill {
+          font-size: clamp(8px, 2.2vw, 9px);
+          padding: 2px 6px;
+        }
+        .meta {
+          font-size: clamp(9px, 2.3vw, 10px);
+        }
+        .empty-state {
+          font-size: clamp(10px, 2.8vw, 12px);
+        }
+        .table-wrapper {
+          margin-left: -6px;
+          margin-right: -6px;
+          width: calc(100% + 12px);
+        }
+        .edit-input {
+          font-size: clamp(9px, 2.5vw, 10px);
+          padding: 5px;
+        }
+        .edit-actions .btn {
+          padding: 5px 6px;
+          font-size: clamp(8px, 2.3vw, 9px);
         }
       }
     </style>
   </head>
   <body>
-    <div class="status-bar" id="live-status">
-      <div class="status-indicator"></div>
+    <div id="live-status" class="status-bar">
+      <span class="status-dot"></span>
       <span id="live-status-text">Live</span>
-      <span id="last-refresh-pill" style="font-size: 10px; opacity: 0.9;"></span>
     </div>
 
-    <div class="controls">
-      <button class="btn btn-primary" id="refresh-btn">Refresh</button>
-      <button class="btn btn-secondary" id="pause-btn">Pause</button>
-    </div>
+    <div class="page">
+      <div class="card">
+        <div class="card-header">
+          <div class="title-block">
+            <h1>Vehicle Updates</h1>
+          </div>
+          <div class="meta">
+            <div class="controls">
+              <span class="pill" id="last-refresh-pill">Last refresh: —</span>
+              <button id="refresh-btn" class="btn btn-primary">
+                <span>Refresh now</span>
+              </button>
+              <button id="pause-btn" class="btn btn-pause">
+                <span>Pause auto-refresh</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-    <div class="container">
-      <div class="header">
-        <h1>Vehicle Updates Dashboard</h1>
-      </div>
-
-      <div class="table-wrapper">
-        <table id="data-table">
-          <thead id="header-row"></thead>
-          <tbody id="body-rows"></tbody>
-        </table>
+        <div class="table-wrapper">
+          <table id="data-table">
+            <thead>
+              <tr id="header-row"></tr>
+            </thead>
+            <tbody id="body-rows">
+              <tr>
+                <td class="empty-state">Loading data…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <script>
-      const IS_LOCAL_HOST =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1" ||
-        window.location.hostname === "";
-
-      const IS_RENDER = window.location.hostname.includes("onrender.com");
-
-      let API_BASE = "";
-      let ENABLE_LIVE = false;
-
-      if (IS_LOCAL_HOST || IS_RENDER) {
-        ENABLE_LIVE = true;
-        API_BASE = "";
-      } else {
-        ENABLE_LIVE = false;
-        API_BASE = "";
-      }
-
+      const API_BASE = ""; // same origin
       let autoRefresh = true;
       let intervalId = null;
       let isUpdating = false;
 
       const EDITABLE_COLUMNS = new Set([
-        "CURRENT STATUS",
-        "SERVICE",
+        "Current Status",
+        "Current Service",
         "Registration Number",
         "Name of Service Advisor",
+        "Remarks",
       ]);
 
       const statusBar = document.getElementById("live-status");
@@ -314,31 +649,35 @@
       const bodyRows = document.getElementById("body-rows");
       const table = document.getElementById("data-table");
 
-      function setStatus(status) {
-        statusBar.className = `status-bar ${status}`;
-        if (status === "live") {
-          statusText.textContent = "Live";
-        } else if (status === "updating") {
-          statusText.textContent = "Updating...";
-        } else if (status === "error") {
-          statusText.textContent = "Error";
+      function setStatus(mode) {
+        statusBar.classList.remove("updating", "error");
+        if (mode === "updating") {
+          statusBar.classList.add("updating");
+          statusText.textContent = "Updating…";
+        } else if (mode === "error") {
+          statusBar.classList.add("error");
+          statusText.textContent = "Live (error)";
+        } else {
+          statusText.textContent = autoRefresh ? "Live" : "Live (paused)";
         }
       }
 
       function formatTime(date) {
-        const h12 = date.getHours() % 12 || 12;
-        const m = String(date.getMinutes()).padStart(2, "0");
-        const s = String(date.getSeconds()).padStart(2, "0");
-        const ampm = date.getHours() >= 12 ? "PM" : "AM";
-        return `${h12}:${m}:${s} ${ampm}`;
+        const pad = (n) => (n < 10 ? "0" + n : n);
+        const h = date.getHours();
+        const m = pad(date.getMinutes());
+        const s = pad(date.getSeconds());
+        const ampm = h >= 12 ? "PM" : "AM";
+        const h12 = h % 12 || 12;
+        return `${pad(h12)}:${m}:${s} ${ampm}`;
       }
 
       async function fetchData() {
-        if (!ENABLE_LIVE) return;
         if (isUpdating) return;
         isUpdating = true;
         setStatus("updating");
-
+        
+        // Add updating class for smooth transition (prevents blinking)
         table.classList.add("updating");
 
         try {
@@ -351,7 +690,8 @@
           const now = new Date();
           lastRefreshPill.textContent = `Last refresh: ${formatTime(now)}`;
           setStatus("live");
-
+          
+          // Remove updating class after render completes
           setTimeout(() => {
             table.classList.remove("updating");
           }, 50);
@@ -429,34 +769,47 @@
           input.type = "text";
           input.className = "edit-input";
           input.value = currentValue;
+
+          const actions = document.createElement("div");
+          actions.className = "edit-actions";
+
+          const saveBtn = document.createElement("button");
+          saveBtn.textContent = "Save";
+          saveBtn.className = "btn btn-primary btn-compact";
+
+          const cancelBtn = document.createElement("button");
+          cancelBtn.textContent = "Cancel";
+          cancelBtn.className = "btn btn-cancel btn-compact";
+
+          actions.appendChild(saveBtn);
+          actions.appendChild(cancelBtn);
+
+          wrapper.appendChild(input);
+          wrapper.appendChild(actions);
+
+          td.onclick = null;
+          td.classList.add("editing-cell");
+          td.innerHTML = "";
+          td.appendChild(wrapper);
           input.focus();
           input.select();
 
-          const saveBtn = document.createElement("button");
-          saveBtn.className = "edit-btn edit-btn-save";
-          saveBtn.textContent = "Save";
-
-          const cancelBtn = document.createElement("button");
-          cancelBtn.className = "edit-btn edit-btn-cancel";
-          cancelBtn.textContent = "Cancel";
-
-          wrapper.appendChild(input);
-          wrapper.appendChild(saveBtn);
-          wrapper.appendChild(cancelBtn);
-
-          td.innerHTML = "";
-          td.appendChild(wrapper);
-          td.classList.add("editing-cell");
-
           const commit = () => {
-            const newValue = input.value.trim();
+            const newValue = input.value;
+            td.onclick = null;
+            td.classList.remove("editing-cell");
+            td.innerHTML = previousInner;
+            td.textContent = newValue || "";
+            td.dataset.value = newValue;
+            makeCellEditable(td, sheetRow, sheetCol, newValue, headerName);
             saveCell(sheetRow, sheetCol, newValue, td, previousInner);
           };
 
           const cancel = () => {
+            td.onclick = null;
             td.classList.remove("editing-cell");
             td.innerHTML = previousInner;
-            makeCellEditable(td, sheetRow, sheetCol, value, headerName);
+            makeCellEditable(td, sheetRow, sheetCol, currentValue, headerName);
           };
 
           saveBtn.onclick = (e) => {
@@ -505,7 +858,7 @@
           row.forEach((cell, colIdx) => {
             const td = document.createElement("td");
             const headerName = headers[colIdx] || "";
-            const sheetCol = colIdx + 3;
+            const sheetCol = colIdx + 3; // skip first two columns in sheet
             const value = cell == null ? "" : String(cell);
             td.dataset.header = headerName;
 
@@ -534,6 +887,7 @@
                 td.appendChild(a);
               }
             } else {
+              // For service-related columns, always show bullet points (even for single values)
               const isServiceColumn = (headerName || "")
                 .toLowerCase()
                 .includes("service");
@@ -552,12 +906,15 @@
                   td.textContent = value;
                 }
               } else {
+                // Check if this is a time column and format it (remove :00 seconds)
                 const isTimeColumn = (headerName || "")
                   .toLowerCase()
                   .includes("time");
-
+                
                 if (isTimeColumn && value) {
+                  // Remove ":00" seconds if present (e.g., "9:00:00 AM" -> "9:00 AM", "14:30:00" -> "14:30")
                   let formattedValue = String(value);
+                  // Match HH:MM:00 pattern and replace with HH:MM (keeping AM/PM if present)
                   formattedValue = formattedValue.replace(/(\d{1,2}:\d{2}):00(\s*(AM|PM))?/gi, "$1$2");
                   td.textContent = formattedValue;
                 } else {
@@ -566,6 +923,7 @@
               }
             }
 
+            // Case-insensitive check for editable columns
             const normalizedHeader = (headerName || "").trim().toLowerCase();
             const isEditable = Array.from(EDITABLE_COLUMNS).some(
               (h) => h.toLowerCase() === normalizedHeader
@@ -588,43 +946,48 @@
           });
           bodyRows.appendChild(tr);
         });
+
+        // Smooth update without blinking - no animation needed
       }
-
-      refreshBtn.onclick = () => {
-        fetchData();
-      };
-
-      pauseBtn.onclick = () => {
-        autoRefresh = !autoRefresh;
-        if (autoRefresh) {
-          pauseBtn.textContent = "Pause";
-          startAutoRefresh();
-        } else {
-          pauseBtn.textContent = "Resume";
-          if (intervalId) {
-            clearInterval(intervalId);
-            intervalId = null;
-          }
-        }
-      };
 
       function startAutoRefresh() {
         if (intervalId) clearInterval(intervalId);
-        if (autoRefresh && ENABLE_LIVE) {
-          intervalId = setInterval(fetchData, 15000);
+        intervalId = setInterval(fetchData, 15000); // 15 seconds
+      }
+
+      function stopAutoRefresh() {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
         }
       }
 
-      if (ENABLE_LIVE) {
+      refreshBtn.addEventListener("click", () => {
+        fetchData();
+      });
+
+      pauseBtn.addEventListener("click", () => {
+        autoRefresh = !autoRefresh;
+        if (autoRefresh) {
+          pauseBtn.textContent = "Pause auto-refresh";
+          startAutoRefresh();
+        } else {
+          pauseBtn.textContent = "Resume auto-refresh";
+          stopAutoRefresh();
+        }
+        setStatus("live");
+      });
+
+      window.addEventListener("load", () => {
         fetchData();
         startAutoRefresh();
-      } else {
-        bodyRows.innerHTML = `
-          <tr>
-            <td class="empty-state cell-muted">Static mode - No backend connection</td>
-          </tr>`;
-        setStatus("error");
-      }
+        setStatus("live");
+      });
+
+      window.addEventListener("beforeunload", () => {
+        stopAutoRefresh();
+      });
     </script>
   </body>
-</html>
+  </html>
+

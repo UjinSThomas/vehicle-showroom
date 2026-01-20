@@ -5,7 +5,7 @@ from googleapiclient.discovery import build
 import os
 import json
 
-SPREADSHEET_ID = os.environ.get("SPREADSHEET_ID", "1BwVVuz6g3YQFX1WZcY_OPbfs6vKaUH1CaEu5bjB1sYM")
+SPREADSHEET_ID = os.environ.get("SPREADSHEET_ID", "17XpNqUCANkaJBjOvEnPct3fr3q3SaNXD13zuTcCQsEQ")
 RANGE_NAME = "Form Responses 1!A:Z"
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
@@ -70,7 +70,7 @@ def index():
 def get_responses():
     """
     Return the latest responses from the Google Sheet as JSON.
-    This mimics your Apps Script generateTableHTML data, but in JSON form.
+    Shows ALL columns except Timestamp.
     """
     try:
         service = get_sheets_service(readonly=True)
@@ -80,50 +80,52 @@ def get_responses():
             range=RANGE_NAME,
         ).execute()
         values = result.get("values", [])
+        
+        print(f"DEBUG: Fetched {len(values)} rows from sheet")
+        
     except Exception as e:
+        print(f"ERROR: Failed to fetch data: {str(e)}")
         return jsonify({"error": f"Failed to fetch data from Google Sheets: {str(e)}"}), 500
 
     if not values:
         return jsonify({"headers": [], "rows": []})
 
-    headers = values[0]
-    data_rows = values[1:]
-
-    # Last 9 entries (like your Apps Script)
-    last_rows = data_rows[-9:] if len(data_rows) > 9 else data_rows
-
-    # Calculate the starting sheet row index (1-based, including header row)
-    # Header is row 1, data_rows[0] is row 2, so:
-    start_data_index = len(data_rows) - len(last_rows)  # 0-based index into data_rows
-    start_sheet_row = 2 + start_data_index
-
-    # Skip timestamp + email columns (first two columns: A and B)
-    # Keep all other columns from column C onwards
-    trimmed_rows = []
-    trimmed_headers = []
-    sheet_row_indices = []
+    # First row is headers
+    all_headers = values[0]
+    all_data_rows = values[1:]
     
-    # Extract headers starting from column C (index 2)
-    trimmed_headers = headers[2:] if len(headers) > 2 else []
+    print(f"DEBUG: All headers: {all_headers}")
+
+    # Skip ONLY Timestamp (column A, index 0)
+    # Show EVERYTHING else including VEHICLE IMAGE, Email, etc.
+    headers_to_show = all_headers[1:]  # Start from index 1 (skip only Timestamp)
     
-    for offset, row in enumerate(last_rows):
-        filtered_row = []
-        # Start from column C (index 2), skip timestamp and email
-        for col_idx in range(2, len(headers)):
-            # Get the cell value, handling cases where row might be shorter
+    print(f"DEBUG: Headers to display: {headers_to_show}")
+
+    rows_to_show = []
+    row_indices = []
+    
+    for row_idx, row in enumerate(all_data_rows):
+        # Skip only first column (Timestamp)
+        row_data = []
+        for col_idx in range(1, len(all_headers)):
             cell_value = row[col_idx] if col_idx < len(row) else ""
-            filtered_row.append(cell_value)
+            row_data.append(cell_value)
         
-        trimmed_rows.append(filtered_row)
-        sheet_row_indices.append(start_sheet_row + offset)
+        rows_to_show.append(row_data)
+        row_indices.append(row_idx + 2)  # +2 because row 1 is header
 
-    return jsonify(
-        {
-            "headers": trimmed_headers,
-            "rows": trimmed_rows,
-            "rowIndices": sheet_row_indices,  # actual sheet row numbers
-        }
-    )
+    # Column mapping: display column index -> actual sheet column (1-based)
+    column_mapping = {}
+    for display_idx in range(len(headers_to_show)):
+        column_mapping[display_idx] = display_idx + 2  # +2 because we skip column A(1)
+
+    return jsonify({
+        "headers": headers_to_show,
+        "rows": rows_to_show,
+        "rowIndices": row_indices,
+        "columnMapping": column_mapping,
+    })
 
 
 @app.post("/api/update-cell")
@@ -167,5 +169,3 @@ def update_cell():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-
-
