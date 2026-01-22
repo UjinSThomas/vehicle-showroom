@@ -71,7 +71,6 @@ def get_responses():
     """
     Return the latest responses from the Google Sheet as JSON.
     Shows ALL columns except Timestamp.
-    Only returns the 10 most recent entries.
     """
     try:
         service = get_sheets_service(readonly=True)
@@ -106,11 +105,7 @@ def get_responses():
     rows_to_show = []
     row_indices = []
     
-    # Get only the last 10 rows (most recent entries)
-    recent_data_rows = all_data_rows[-10:] if len(all_data_rows) > 10 else all_data_rows
-    start_row_offset = len(all_data_rows) - len(recent_data_rows)
-    
-    for row_idx, row in enumerate(recent_data_rows):
+    for row_idx, row in enumerate(all_data_rows):
         # Skip only first column (Timestamp)
         row_data = []
         for col_idx in range(1, len(all_headers)):
@@ -118,14 +113,12 @@ def get_responses():
             row_data.append(cell_value)
         
         rows_to_show.append(row_data)
-        row_indices.append(start_row_offset + row_idx + 2)  # +2 because row 1 is header
+        row_indices.append(row_idx + 2)  # +2 because row 1 is header
 
     # Column mapping: display column index -> actual sheet column (1-based)
     column_mapping = {}
     for display_idx in range(len(headers_to_show)):
         column_mapping[display_idx] = display_idx + 2  # +2 because we skip column A(1)
-
-    print(f"DEBUG: Showing {len(rows_to_show)} most recent rows")
 
     return jsonify({
         "headers": headers_to_show,
